@@ -1,0 +1,9 @@
+<a href="{URL_FULL}" class="postlink">
+  <div>
+    <h1>{TITLE}</h1>
+    <p>{URL_DISPLAY}</p>
+    <i>{DATE}</i>
+  </div>
+</a>
+
+

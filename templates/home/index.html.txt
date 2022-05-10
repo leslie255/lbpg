@@ -1,0 +1,54 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Leslie Kerman</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<link rel="stylesheet" href="style.css">
+
+<body>
+  <h1>LESLIE'S WEBSITE</h1>
+  <img src="res/kerbal.png" id="kerbal">
+  <a href="https://github.com/p-z-l">
+    <div class="socialtag">
+      <img src="res/pixgithublogo.png">
+      p-z-l
+    </div>
+  </a>
+  <a href="https://twitter.com/kerbal255">
+    <div class="socialtag">
+      <img src="res/pixtwitterlogo.png">
+      @kerbal255
+    </div>
+  </a>
+  <a href="https://reddit.com/u/eveatmosphere">
+    <div class="socialtag">
+      <img src="res/pixredditlogo.png">
+      u/EveAtmosphere
+    </div>
+  </a>
+  <a>
+    <div class="socialtag" onclick="copyDiscordTag()">
+      <img src="res/pixdiscordlogo.png">
+      Leslie#4607
+    </div>
+  </a>
+  <br>
+  <br>
+  <p>Hi, welcome to Leslie Kerman's website, checkout my socials :)</p>
+  <hr>
+  {ARTICLE_LIST}
+</body>
+<script>
+  function copyDiscordTag() {
+    navigator.clipboard.writeText("Leslie#4607");
+    alert("Copied to clipboard");
+  }
+</script>
+
+</html>
+
