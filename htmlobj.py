@@ -2,6 +2,7 @@ import re
 
 class HTMLObject:
     def __init__(self, templateName: str) -> None:
+        self.__name = templateName
         self.text = ""
         self.items = {}
         f = open(templateName+".html.txt", "r")
@@ -46,11 +47,11 @@ class HTMLObject:
         if self.safeCheck():
             return self.text
         else:
-            print("trying to access text without filling all items")
+            print("HTMLObject.safeGetText(...):\ntrying to access text of "+self.__name+" without filling all items")
             print("items not filled:")
+            print(self.items)
             for name in self.items:
                 if self.items[name] == False:
                     print(name)
             exit(1)
-
 

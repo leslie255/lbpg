@@ -2,28 +2,10 @@ import os
 from os.path import join as pathjoin
 from os import mkdir as mkdir
 
-from markdown import markdown as mdToHTML
-from htmlobj import *
 import fileIO
+from htmlobj import *
 from fileIO import fopen as open
-
-class HomePage:
-    def __init__(self, pageTemplatePath, itemTemplatePath) -> None:
-        self.__itemTexts = []
-        self.html = HTMLObject(pageTemplatePath)
-        self.__itemTemplatePath = itemTemplatePath
-    
-    def addSubpage(self, urlFull: str, urlDisplay: str, title: str, date: str) -> None:
-        itemHTML = HTMLObject(self.__itemTemplatePath)
-        itemHTML.fillItem("URL_FULL", urlFull)
-        itemHTML.fillItem("URL_DISPLAY", urlDisplay)
-        itemHTML.fillItem("TITLE", title)
-        itemHTML.fillItem("DATE", date)
-        self.__itemTexts.append(itemHTML.safeGetText())
-
-    def generateText(self) -> str:
-        self.html.fillItemMultiple("ARTICLE_LIST", self.__itemTexts)
-        return self.html.safeGetText()
+from pages import *
 
 def genTargetDirs(targetdir: str) -> None:
     if os.path.exists(targetdir):
@@ -32,33 +14,42 @@ def genTargetDirs(targetdir: str) -> None:
     targetresdir = pathjoin(targetdir, "res/")
     mkdir(targetresdir)
     
+    print("copying resources...", end="")
     resdir = os.path.abspath("res/")
     os.system("cp -rf "+resdir+"/* "+targetdir)
+    print("ok")
+
+def loadArticlesInDir(articlesDir: str) -> list[Article]:
+    articles = []
+    for file in os.listdir(articlesDir):
+        lol = os.path.splitext(file)
+        filename = lol[0]
+        fileext = lol[1]
+        if fileext != ".json":
+            continue
+        path = pathjoin(articlesDir, filename)
+        print("loading "+path+"...", end="")
+        articles.append(Article(path))
+        print("ok")
+    return articles
 
 def main():
-    homePage = HomePage("templates/home/index", "templates/home/blogitem")
-    homePage.addSubpage("posts/demo.html", "posts/demo.html", "Demo Article", "2022/05/12")
-
-    demoArticleContent = fileIO.getText("articles/demo.md")
-
-    articleBody = mdToHTML(demoArticleContent)
-    articleHTML = HTMLObject("templates/article/article")
-    articleHTML.fillItem("CSS_PATH", "../style.css")
-    articleHTML.fillItem("TITLE", "Demo Article")
-    articleHTML.fillItem("CONTENT", articleBody)
-    articleHTML.fillItem("HOMEPAGE_PATH", "../index.html")
-
     targetdir = os.path.abspath("generated/")
     genTargetDirs(targetdir)
-    
-    indexhtmlFile = open(pathjoin(targetdir, "index.html"), "w+")
-    indexhtmlFile.write(homePage.generateText())
-
-    postsdir = os.path.join(targetdir, "posts/")
+    postsdir = pathjoin(targetdir, "posts/")
     mkdir(postsdir)
-    articlehtmlFile = open(pathjoin(postsdir, "demo.html"), "w+")
-    articlehtmlFile.write(articleHTML.safeGetText())
 
+    homePage = HomePage("templates/home/index", "templates/home/blogitem")
+
+    for article in loadArticlesInDir("articles"):
+        article.saveToDir(postsdir)
+        homePage.addSubpageOfArticle(article)
+    print("all articles generated")
+    print("generating homepage...", end="")
+    homePage.writeToFile(pathjoin(targetdir, "index.html"))
+    print("ok")
+
+    print("all generated, wrapping up...")
     fileIO.closeAllOpenedFiles()
 
 main()

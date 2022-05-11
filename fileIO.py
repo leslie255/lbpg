@@ -1,3 +1,5 @@
+import os
+
 openedFiles = []
 
 def fopen(path: str, flags: str):
@@ -16,4 +18,7 @@ def getText(path: str) -> str:
     for line in open(path, "r").readlines():
         content += line
     return content
+
+def extOfPath(path: str) -> str:
+    return os.path.splitext(path)[1]
 
