@@ -1,32 +1,65 @@
 import os
+from os.path import join as pathjoin
+from os import mkdir as mkdir
+
+from markdown import markdown as mdToHTML
 from htmlobj import *
+import fileIO
+from fileIO import fopen as open
 
-def main():
-    item0 = HTMLObject("templates/home/blogitem")
-    item0.fillItem("URL_FULL", "http://github.com/p-z-l/nvim-config")
-    item0.fillItem("TITLE", "My Epic NeoVim Configuration")
-    item0.fillItem("URL_DISPLAY", "github.com/p-z-l/nvim-config")
-    item0.fillItem("DATE", "2022/05/10")
-    item1 = HTMLObject("templates/home/blogitem")
-    item1.fillItem("URL_FULL", "http://github.com/p-z-l/nvim-config")
-    item1.fillItem("TITLE", "My Epic NeoVim Configuration (another one!)")
-    item1.fillItem("URL_DISPLAY", "github.com/p-z-l/nvim-config")
-    item1.fillItem("DATE", "2022/05/10")
-    homePage = HTMLObject("templates/home/index")
-    homePage.fillItem("ARTICLE_LIST", item0.safeGetText()+item1.safeGetText())
+class HomePage:
+    def __init__(self, pageTemplatePath, itemTemplatePath) -> None:
+        self.__itemTexts = []
+        self.html = HTMLObject(pageTemplatePath)
+        self.__itemTemplatePath = itemTemplatePath
+    
+    def addSubpage(self, urlFull: str, urlDisplay: str, title: str, date: str) -> None:
+        itemHTML = HTMLObject(self.__itemTemplatePath)
+        itemHTML.fillItem("URL_FULL", urlFull)
+        itemHTML.fillItem("URL_DISPLAY", urlDisplay)
+        itemHTML.fillItem("TITLE", title)
+        itemHTML.fillItem("DATE", date)
+        self.__itemTexts.append(itemHTML.safeGetText())
 
-    targetdir = os.path.abspath("generated/")
-    targetresdir = os.path.join(targetdir, "res/")
+    def generateText(self) -> str:
+        self.html.fillItemMultiple("ARTICLE_LIST", self.__itemTexts)
+        return self.html.safeGetText()
+
+def genTargetDirs(targetdir: str) -> None:
     if os.path.exists(targetdir):
-        os.system("rm -r "+targetdir)
-    os.mkdir(targetdir)
-    os.mkdir(targetresdir)
+         os.system("rm -r "+targetdir)
+    mkdir(targetdir)
+    targetresdir = pathjoin(targetdir, "res/")
+    mkdir(targetresdir)
     
     resdir = os.path.abspath("res/")
     os.system("cp -rf "+resdir+"/* "+targetdir)
+
+def main():
+    homePage = HomePage("templates/home/index", "templates/home/blogitem")
+    homePage.addSubpage("posts/demo.html", "posts/demo.html", "Demo Article", "2022/05/12")
+
+    demoArticleContent = fileIO.getText("articles/demo.md")
+
+    articleBody = mdToHTML(demoArticleContent)
+    articleHTML = HTMLObject("templates/article/article")
+    articleHTML.fillItem("CSS_PATH", "../style.css")
+    articleHTML.fillItem("TITLE", "Demo Article")
+    articleHTML.fillItem("CONTENT", articleBody)
+    articleHTML.fillItem("HOMEPAGE_PATH", "../index.html")
+
+    targetdir = os.path.abspath("generated/")
+    genTargetDirs(targetdir)
     
-    indexhtmlFile = open(os.path.join(targetdir, "index.html"), "w+");
-    indexhtmlFile.write(homePage.safeGetText())
+    indexhtmlFile = open(pathjoin(targetdir, "index.html"), "w+")
+    indexhtmlFile.write(homePage.generateText())
+
+    postsdir = os.path.join(targetdir, "posts/")
+    mkdir(postsdir)
+    articlehtmlFile = open(pathjoin(postsdir, "demo.html"), "w+")
+    articlehtmlFile.write(articleHTML.safeGetText())
+
+    fileIO.closeAllOpenedFiles()
 
 main()
 
