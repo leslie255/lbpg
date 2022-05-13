@@ -1,10 +1,11 @@
-from os.path import join as pathjoin
+from os import path as p
+from markdown import markdown as mdToHTML
+import json
 
 import fileIO
 from htmlobj import *
 from fileIO import fopen as open
-from markdown import markdown as mdToHTML
-import json
+from cmdio import *
 
 class Article:
     def __init__(self, path) -> None:
@@ -29,7 +30,7 @@ class Article:
         self.htmlText = htmlObj.safeGetText()
 
     def saveToDir(self, dirPath: str) -> None:
-        open(pathjoin(dirPath, self.fileName), "w+").write(self.htmlText)
+        open(p.join(dirPath, self.fileName), "w+").write(self.htmlText)
 
 class HomePage:
     def __init__(self, pageTemplatePath, itemTemplatePath) -> None:
@@ -40,7 +41,7 @@ class HomePage:
     
     def addSubpageLink(self, urlFull: str, urlDisplay: str, title: str, date: str) -> None:
         if self.hasGenerated:
-            print("trying to add a subpage to homepage after text has already generated")
+            logErr("trying to add a subpage to homepage after text has already generated")
             exit(1)
         itemHTML = HTMLObject(self.__itemTemplatePath)
         itemHTML.fillItem("URL_FULL", urlFull)
@@ -51,7 +52,7 @@ class HomePage:
 
     def addSubpageOfArticle(self, article: Article) -> None:
         if self.hasGenerated:
-            print("trying to add an aricle subpage to homepage after text has already generated")
+            logErr("trying to add an aricle subpage to homepage after text has already generated")
             exit(1)
         url = "posts/"+article.id+".html"
         self.addSubpageLink(url, url, article.title, article.dateStr)

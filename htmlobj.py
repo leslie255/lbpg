@@ -1,5 +1,7 @@
 import re
 
+from cmdio import *
+
 class HTMLObject:
     def __init__(self, templateName: str) -> None:
         self.__name = templateName
@@ -17,7 +19,7 @@ class HTMLObject:
 
     def fillItem(self, itemName: str, text: str) -> None:
         if itemName not in self.items:
-            print("trying to replace an unexisted item: "+itemName)
+            logErr("trying to replace an unexisted item: "+itemName)
             exit(1)
         self.items[itemName] = True
         replaced = re.sub("{" + itemName + "}", text, self.text)
@@ -25,7 +27,7 @@ class HTMLObject:
 
     def fillItemMultiple(self, itemName: str, texts: list[str]) -> None:
         if itemName not in self.items:
-            print("trying to replace an unexisted item: "+itemName)
+            logErr("trying to replace an unexisted item: "+itemName)
             exit(1)
         self.items[itemName] = True
         fullText = ""
@@ -47,11 +49,10 @@ class HTMLObject:
         if self.safeCheck():
             return self.text
         else:
-            print("HTMLObject.safeGetText(...):\ntrying to access text of "+self.__name+" without filling all items")
-            print("items not filled:")
-            print(self.items)
+            logErr("HTMLObject.safeGetText(...):\ntrying to access text of "+self.__name+" without filling all items")
+            logErrClean("items not filled:")
             for name in self.items:
                 if self.items[name] == False:
-                    print(name)
+                    logErrClean(name)
             exit(1)
 
