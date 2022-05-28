@@ -12,10 +12,10 @@
 <body>
   <h1>LESLIE'S WEBSITE</h1>
   <img src="res/kerbal.png" id="kerbal">
-  <a href="https://github.com/p-z-l">
+  <a href="https://github.com/leslie255">
     <div class="socialtag">
       <img src="res/pixgithublogo.png">
-      p-z-l
+      leslie255
     </div>
   </a>
   <a href="https://twitter.com/kerbal255">

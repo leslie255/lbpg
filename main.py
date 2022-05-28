@@ -72,7 +72,7 @@ def main():
 
     homePage = HomePage(p.join(srcdir, "templates/home/index"), p.join(srcdir, "templates/home/blogitem"))
 
-    for article in loadArticlesInDir(path.join(srcdir, "articles")):
+    for article in loadArticlesInDir(p.join(srcdir, "articles")):
         article.saveToDir(postsdir)
         homePage.addSubpageOfArticle(article)
     log("all articles generated")
